@@ -1,7 +1,4 @@
-
-
 import React, { useState } from 'react';
-import axios from 'axios';
 import './App.css';
 
 function App() {
@@ -13,7 +10,7 @@ function App() {
   const handleInputChange = (index, value) => {
     const newPanels = [...panels];
     newPanels[index] = value;
-    setPanels(newPanels);
+    setPanels(newPanels); 
   };
 
   const handleSpeechBubbleChange = (index, value) => {
