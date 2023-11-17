@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 
 function App() {
@@ -6,6 +6,13 @@ function App() {
   const [speechBubbles, setSpeechBubbles] = useState(['', '', '', '', '', '', '', '', '', '']);
   const [comicImages, setComicImages] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setLoading(false);
+  }, [panels]);
+
+  
 
   const handleInputChange = (index, value) => {
     const newPanels = [...panels];
@@ -14,6 +21,7 @@ function App() {
   };
 
   const handleSpeechBubbleChange = (index, value) => {
+
     const newSpeechBubbles = [...speechBubbles];
     newSpeechBubbles[index] = value;
     setSpeechBubbles(newSpeechBubbles);
@@ -36,10 +44,15 @@ function App() {
 
   const handleCreateComic = async () => {
     try {
-      const images = [];
+      setLoading(true);
 
+      const images = [];
+          
       for (const [index, panelText] of panels.entries()) {
         console.log("start");
+        if (!panelText.trim()) {
+          break;
+        }
         const response = await query({ "inputs": panelText });
         console.log(response);
         const imageUrl = URL.createObjectURL(response);
@@ -52,9 +65,11 @@ function App() {
       console.log("pushed");
       setComicImages(images);
       setErrorMessage('');
-    } catch (error) {
+    }catch (error) {
       console.error('Error creating comic', error);
       setErrorMessage('Error creating comic. Please try again.');
+    }finally {
+      setLoading(false); 
     }
   };
 
@@ -85,6 +100,12 @@ function App() {
           </div>
         ))}
         <button onClick={handleCreateComic}>Create Comic</button>
+
+        {loading && (
+      <div className="loading-container">
+        <div className="loading-indicator"></div>
+      </div>
+    )}
         {errorMessage && <p className="error-message">{errorMessage}</p>}
       </div>
 
